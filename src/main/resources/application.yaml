@@ -1,0 +1,46 @@
+spring.datasource:
+  url: jdbc:h2:./camunda-db;DB_CLOSE_DELAY=-1;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE
+#shareable h2 database: jdbc:h2:./camunda-db;DB_CLOSE_DELAY=-1;MVCC=TRUE;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
+  username: sa
+  password: sa
+spring.h2.console.enabled: true
+
+spring:
+  jersey:
+    application-path: engine-rest
+
+camunda.bpm:
+  history-level: audit
+  authorization:
+    enabled: true
+  filter:
+    create: All tasks
+
+server:
+  port: 8080
+
+keycloak.url.client: ${KEYCLOAK_URL_CLIENT:http://localhost:8083}
+keycloak.realm: your-realm
+keycloak.client: your-client
+keycloak.secret: your-secret
+
+security:
+  oauth2:
+    client:
+      client-id: ${keycloak.client}
+      client-secret: ${keycloak.secret}
+      accessTokenUri: ${keycloak.url.client}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
+      userAuthorizationUri: ${keycloak.url.client}/auth/realms/${keycloak.realm}/protocol/openid-connect/auth
+      scope: openid profile email
+    resource:
+      userInfoUri: ${keycloak.url.client}/auth/realms/${keycloak.realm}/protocol/openid-connect/userinfo
+
+plugin.identity.keycloak:
+  keycloakIssuerUrl: ${keycloak.url.client}/auth/realms/${keycloak.realm}
+  keycloakAdminUrl: ${keycloak.url.client}/auth/admin/realms/${keycloak.realm}
+  clientId: ${keycloak.client}
+  clientSecret: ${keycloak.secret}
+  useEmailAsCamundaUserId: true
+  useUsernameAsCamundaUserId: false
+  administratorGroupName: admin
+  disableSSLCertificateValidation: true
